@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
 
 import Header from './components/Header';
 import StartGameScreen from './screens/StartGameScreen';
 import GameScreen from './screens/GameScreen';
 import GameOverScreen from './screens/GameOverScreen';
 
+
+SplashScreen.preventAutoHideAsync();
+
+
+
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [guessRounds, setGuessRounds] = useState(0);
+
+  const [fontsLoaded] = useFonts({
+    'OpenSansBold': require('./assets/fonts/OpenSansBold.ttf'),
+    'OpenSansRegular': require('./assets/fonts/OpenSansRegular.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
 
   const configureNewGameHandler = () => {
@@ -35,7 +58,7 @@ export default function App() {
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={styles.screen} onLayout={onLayoutRootView}>
       <Header title="Guess a Number" />
       {content}
 
